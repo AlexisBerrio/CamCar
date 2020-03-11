@@ -6,6 +6,13 @@
 """
 
 import pygame
+import cv2
+
+
+face_classifier=cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
+cap = cv2.VideoCapture(0)
+
+
 # import random
  
  
@@ -17,13 +24,15 @@ rojo = (255, 0, 0)
 azul = (0, 0, 255)
 violeta = (98, 0, 255)
 PI = 3.141592653
-  
+
+# Variables de control para el movimiento
+dir = 'c'
 pygame.init()
    
 # Establecemos las dimensiones de la pantalla [largo,altura]
 dimensiones = [400,400]
 pantalla = pygame.display.set_mode(dimensiones) 
-pygame.display.set_caption("Prueba")
+pygame.display.set_caption("CAMCAR")
    
 #Imagen del carro
 carro = pygame.image.load("Carro.jpg").convert()
@@ -43,27 +52,46 @@ pos_cambio = 0
 pygame.mouse.set_visible(0)
 # -------- Bucle principal del Programa -----------
 while not hecho:
+    # Captura frame-by-frame
+    ret, image = cap.read()
+    # Pasar cada frame a escala de grises
+    gris = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    # Aplicar clasificador de rostros frontales
+    face = face_classifier.detectMultiScale(gris, 1.3, 5)
+    # Seguimiento del rostro mediante un rectangulo
+    for (x, y, w, h) in face:
+        cv2.rectangle(image, (x, y), (x + w, y + h), (255, 0, 0), 3)
+        #Obtener dirección en base a la posición del rostro, 10% de tolerancia para el centro
+        if (x + w / 2 > image.shape[1] / 2 - image.shape[1] / 2 * 0.1) and (x + w / 2 < image.shape[1] / 2 + image.shape[1] / 2 * 0.1):
+            dir = 'c'
+        elif x + w/2 < image.shape[1]/2:
+            dir = 'l'
+        elif x + w/2 > image.shape[1]/2:
+            dir = 'r'
+    # Mostrar el resultado
+    cv2.imshow('image', image)
     # --- Bucle principal de eventos
     for evento in pygame.event.get():
         if evento.type == pygame.QUIT: 
             hecho = True  
-#        Al presionar las teclas de direccion, se cambia la velocidad    
-        elif evento.type == pygame.KEYDOWN:
-            if evento.key == pygame.K_LEFT:
-                pos_cambio =- 3
-            elif evento.key == pygame.K_RIGHT:
-                pos_cambio = 3
-#       Vuelve a 0 si se suelta la tecla
-        elif evento.type == pygame.KEYUP:
-            # Si es una de las flechas, resetea el vector a cero.
-            if evento.key == pygame.K_LEFT:
-                pos_cambio = 0
-            elif evento.key == pygame.K_RIGHT:
-                pos_cambio = 0
+#        Al presionar las teclas de direccion, se cambia la velocidad
+    if dir == 'l':
+        pos_cambio =- 3
+        print('-')
+    elif dir == 'r':
+        pos_cambio = 3
+        print('+')
+    elif dir == 'c':
+        print('0')
+        pos_cambio = 0
+    print(pos_cambio)
     x_coord = x_coord + pos_cambio
     rect_y += 1
 #   Limpiar pantalla
+    if cv2.waitKey(1) & 0xFF == ord('q'):
+        break
     pantalla.fill(blanco)
+
     
 #Obstaculo 1  
     pygame.draw.rect(pantalla, negro, [rect_x, rect_y, 70, 50])
@@ -87,6 +115,8 @@ while not hecho:
 # Cerramos la ventana y salimos.
 # Si te olvidas de esta última línea, el programa se 'colgará'
 # al salir si lo hemos estado ejecutando desde el IDLE.
+cap.release()
+cv2.destroyAllWindows()
 pygame.quit()
 
 #pygame.draw.line(pantalla, verde, [0, 0], [100, 100], 5)
