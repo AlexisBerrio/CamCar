@@ -51,18 +51,15 @@ carro = pygame.image.load("llama.png").convert()
 carro=pygame.transform.scale(carro,(70,70))
 rectanguloCarro = carro.get_rect()
 carro.set_colorkey(negro)
-#rectanguloCarro.left = x_coord
 rectanguloCarro.top = 330
 
 #Imagen del obstaculo1
 obsta1 = pygame.image.load("Obstaculo1.png")#.convert()
-#obsta1=pygame.transform.scale(obsta1,(70,70))
 obsta1.set_colorkey(negro)
 rectobsta1 = obsta1.get_rect()
 
 # --- Imagen del obstaculo2 ---
 obsta2 = pygame.image.load("Obstaculo2.png")#.convert()
-#obsta2=pygame.transform.scale(obsta2,(40,70))
 obsta2.set_colorkey(negro)
 rectobsta2 = obsta2.get_rect()
 
