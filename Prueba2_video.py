@@ -1,7 +1,7 @@
 
-import numpy as np
+#import numpy as np
 import cv2
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 
 
 face_classifier=cv2.CascadeClassifier('haarcascade_frontalface_default.xml')   
