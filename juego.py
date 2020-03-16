@@ -1,18 +1,14 @@
-# -*- coding: utf-8 -*-
-"""
-@author: ALEXIS
-"""
-
 import pygame
 import cv2
-#import random
+import random
 
+#Clasificador de rostros en vista fontal
 face_classifier=cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
 cap = cv2.VideoCapture(0)
 
+pygame.init()
 
- 
- 
+
 # Definicion de colores 
 negro = (0, 0 ,0)
 blanco = (255, 255, 255)
@@ -20,16 +16,14 @@ verde = (0, 255, 0)
 rojo = (255, 0, 0)
 azul = (0, 0, 255)
 violeta = (98, 0, 255)
-PI = 3.141592653
+negro = (0, 0 ,0)
 
+# ---- Declaración de variables ----
 # Variables de control para el movimiento
 dir = 'c'
-pygame.init()
    
 # Establecemos las dimensiones de la pantalla [largo,altura]
 dimensiones = [400,400]
-pantalla = pygame.display.set_mode(dimensiones) 
-pygame.display.set_caption("CAMCAR")
 
 hecho = False 
 # Se usa para establecer cuan rápido se actualiza la pantalla
@@ -38,34 +32,74 @@ reloj = pygame.time.Clock()
 rect_x = 100
 rect_y = 50
 #Posicion inicial carro
-x_coord = 100
+x_coord = 150
+y_coord = 290
 # Velocidad y direccion
 rect_cambio = 2
 pos_cambio = 0
-velocidad = 3
-#Ocultar el puntero 
+pos_cambioy = 0
+velocidad = 2
+angle = 0
+#Tolerancia para el centro
+tol = 0.25 
+#Contabilizador de puntaje
+marcador = 0
+#--- Crear ventana para el juego ---
+pantalla = pygame.display.set_mode(dimensiones) 
+pygame.display.set_caption("CAMCAR")
+# --- Ocultar el puntero --- 
 pygame.mouse.set_visible(0)
 
-#Imagen del carro
-carro = pygame.image.load("llama.png").convert()
-carro=pygame.transform.scale(carro,(70,70))
-rectanguloCarro = carro.get_rect()
-carro.set_colorkey(negro)
-rectanguloCarro.top = 330
 
-#Imagen del obstaculo1
-obsta1 = pygame.image.load("Obstaculo1.png")#.convert()
-obsta1.set_colorkey(negro)
-rectobsta1 = obsta1.get_rect()
+ #-------- Clase que representa a los carros --------
+class carro(pygame.sprite.Sprite):
+    def __init__(self,width,height,ima):
+    #Constructor, tiene como parámetros las posiciones X y Y y la imagen del carro
+        pygame.sprite.Sprite.__init__(self)
+        
+        # Cargar imagen y eliminar el fondo negro
+        self.image = ima
+        self.image.set_colorkey(negro)
+        # Obtener el rectangulo de la imagen
+        self.rect = self.image.get_rect()
+        # Posiciones iniciales de la esquina superior izquierda
+        self.rect.topleft=(width,height)
+        
+#    def rot_center(self, angle,x,y):
+#        self.image = pygame.transform.rotate(self.image, angle)
+#        self.rect = self.image.get_rect()
+#        self.rect.center=(x,y)
+ #-------- Clase para las monedas --------
+class coin(pygame.sprite.Sprite):
+    def __init__(self,width,height,color):
+    #Constructor, tiene como parámetros las posiciones X y Y
+        pygame.sprite.Sprite.__init__(self)
+        
+        # Crea un objeto con forma rectangular
+        self.image = pygame.Surface([width,height])
+        self.image.fill(color)
+        self.rect = self.image.get_rect()    
 
-# --- Imagen del obstaculo2 ---
-obsta2 = pygame.image.load("Obstaculo2.png")#.convert()
-obsta2.set_colorkey(negro)
-rectobsta2 = obsta2.get_rect()
+#Mediante la clase Group se añaden a una lista todas las monedas generadas
+moneda_lista = pygame.sprite.Group()
+#Se tiene tambien en cuenta el carro del jugador
+lista_sprites = pygame.sprite.Group()
+ 
+ # ---- Generación de monedas en posiciones aleatorias ----   
+for i in range(4):
+    # Esto representa una moneda
+    moneda = coin(20, 20, negro)
+    # Establecemos una ubicación aleatoria para cada moneda
+    moneda.rect.x = random.randrange(400)
+    moneda.rect.y = random.randrange(400) 
+    # Añadimos cada moneda a la lista de objetos
+    moneda_lista.add(moneda)    
+    lista_sprites.add(moneda)
 
 # --- Score ---
 fuente = pygame.font.Font(None, 25)
 texto = fuente.render("Score:", True,negro)
+
 # -------- Bucle principal del Programa -----------
 while not hecho:
     # Captura frame-by-frame
@@ -79,64 +113,92 @@ while not hecho:
     # Seguimiento del rostro mediante un rectangulo
     for (x, y, w, h) in face:
         cv2.rectangle(image, (x, y), (x + w, y + h), (255, 0, 0), 3)
-        #Obtener dirección en base a la posición del rostro, 10% de tolerancia para el centro
-        if (x + w / 2 > image.shape[1] / 2 - image.shape[1] / 2 * 0.1) and (x + w / 2 < image.shape[1] / 2 + image.shape[1] / 2 * 0.1):
+        #Obtener dirección en base a la posición del rostro, 20% de tolerancia para el centro
+        if (x + w / 2 > image.shape[1] / 2 - image.shape[1] / 2 * tol) and (x + w / 2 < image.shape[1] / 2 + image.shape[1] / 2 * tol) and (y + h / 2 > image.shape[0] / 2 - image.shape[0] / 2 * tol) and (y + h / 2 < image.shape[0] / 2 + image.shape[0] / 2 * tol):
             dir = 'c'
-        elif x + w/2 < image.shape[1]/2:
+        elif x + w/2 < image.shape[1]/2 and (y + h / 2 > image.shape[0] / 2 - image.shape[0] / 2 * tol) and (y + h / 2 < image.shape[0] / 2 + image.shape[0] / 2 * tol):
             dir = 'l'
-        elif x + w/2 > image.shape[1]/2:
+        elif x + w/2 > image.shape[1]/2 and (y + h / 2 > image.shape[0] / 2 - image.shape[0] / 2 * tol) and (y + h / 2 < image.shape[0] / 2 + image.shape[0] / 2 * tol):
             dir = 'r'
+        elif y + h/2 < image.shape[0]/2 and (x + w / 2 > image.shape[1] / 2 - image.shape[1] / 2 * tol) and (x + w / 2 < image.shape[1] / 2 + image.shape[1] / 2 * tol):
+            dir = 'u'
+        elif y + h/2 > image.shape[0]/2 and (x + w / 2 > image.shape[1] / 2 - image.shape[1] / 2 * tol) and (x + w / 2 < image.shape[1] / 2 + image.shape[1] / 2 * tol):
+            dir = 'd'
     # Mostrar el resultado
     cv2.imshow('image', image)
-    # --- Bucle principal de eventos
+# --- Bucle principal de eventos ---
+    
     for evento in pygame.event.get():
         if evento.type == pygame.QUIT: 
             hecho = True  
-#        Al presionar las teclas de direccion, se cambia la velocidad
-    if dir == 'l':
+#        Al obtener la posición del rostro, se cambia la velocidad en X y Y
+    if dir == 'l' and (x_coord>0):
         pos_cambio =- 3
-        print('-')
-    elif dir == 'r':
+        pos_cambioy = 0
+#        print('-')
+    elif dir == 'r' and (x_coord<400-60):
         pos_cambio = 3
-        print('+')
+        pos_cambioy = 0
+#        print('+')
     elif dir == 'c':
-        print('0')
+#        print('0')
         pos_cambio = 0
-    print(pos_cambio)
+        pos_cambioy = 0
+    elif dir == 'u' and (y_coord>0):
+        pos_cambioy =- 3
+        pos_cambio = 0
+#        print('++')
+    elif dir == 'd' and (y_coord<400-121):
+        pos_cambioy = 3
+        pos_cambio = 0
+    else:
+        pos_cambio = 0
+        pos_cambioy = 0
+#        print('--')
+#    print(pos_cambio)
+# --- Limitar movimiento a la pantalla ---        
+#    if (x_coord<0) or(x_coord>400):
+#        pos_cambio=0
+#    if (y_coord<0) or(y_coord>400):
+#        pos_cambioy=0   
+        
     x_coord = x_coord + pos_cambio
+    y_coord = y_coord + pos_cambioy
     rect_y += velocidad
 #   Limpiar pantalla
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
     pantalla.fill(blanco)
-# ---- Actualizar posiciones ----
-    rectobsta1 = obsta1.get_rect()
-    rectobsta1.left = rect_x
-    rectobsta1.top = rect_y
-    
-    rectobsta2 = obsta1.get_rect()
-    rectobsta2.left = rect_x+200
-    rectobsta2.top = rect_y+6
-    
-    rectanguloCarro.left = x_coord
-    
-    
-# ---- Comprobar colisiones ----
-    if rectanguloCarro.colliderect( rectobsta1 ):
-        velocidad=0
-    if rectanguloCarro.colliderect( rectobsta2 ):
-        velocidad=0
  
- # ---- Dibujamos objetos ----   
 #Obstaculo 1  
-    pantalla.blit(obsta1,rectobsta1)  
-#Obstaculo 2  
-    pantalla.blit(obsta2,rectobsta2)  
+    obsta1=carro(rect_x,rect_y,pygame.image.load("Obstaculo1.png"))
+    pantalla.blit(obsta1.image,obsta1.rect)  
+#Obstaculo 2    
+    obsta2=carro(rect_x+200,rect_y+6,pygame.image.load("Obstaculo2.png"))
+    pantalla.blit(obsta2.image,obsta2.rect)  
 #Carro
-    pantalla.blit(carro,rectanguloCarro)
-#Score
+    car=carro(x_coord,y_coord,pygame.image.load("Carro.png"))
+#    car.rot_center(90,x_coord,y_coord)
+    pantalla.blit(car.image,car.rect)
+   
+    
+    
+# --- Se buscan colisiones del entre el carro del jugadror y las monedas    
+    lista_impactos = pygame.sprite.spritecollide(car, moneda_lista, True) 
+    for moneda in lista_impactos:
+        marcador += 1
+#        print( marcador )
+# Dibujar monedas
+    lista_sprites.draw(pantalla)
+    
+# ---- Comprobar colisiones entre carros ----   
+    if pygame.sprite.collide_rect(car, obsta1) or pygame.sprite.collide_rect(car, obsta2) :
+        velocidad=0
+#Score en pantalla 
     pantalla.blit(texto, [5, 5])
-            
+    font = pygame.font.Font(None, 25)
+    text = font.render(str(marcador), 1, negro)
+    pantalla.blit(text, (70,5))      
     # --- Avanzamos y actualizamos la pantalla con lo que hemos dibujado.
     pygame.display.flip()
  
@@ -149,20 +211,3 @@ while not hecho:
 cap.release()
 cv2.destroyAllWindows()
 pygame.quit()
-
-#pygame.draw.line(pantalla, verde, [0, 0], [100, 100], 5)
-#    for desplazar_y in range(0, 100, 10):
-#        pygame.draw.line(pantalla, rojo, [0, 10 + desplazar_y], [100, 110 + desplazar_y], 5)
-#        
-#    pygame.draw.rect(pantalla, negro, [20, 20, 250, 100], 2)
-#    pygame.draw.ellipse(pantalla, negro, [20, 20, 250, 100], 2) 
-#    pygame.draw.arc(pantalla, negro, [20, 220, 250, 200], 0, PI / 2, 2)
-#    pygame.draw.arc(pantalla, verde, [20, 220, 250, 200], PI / 2, PI, 2)
-#    pygame.draw.arc(pantalla, azul, [20, 220, 250, 200], PI, 3 * PI / 2, 2)
-#    pygame.draw.arc(pantalla, rojo, [20, 220, 250, 200], 3 * PI / 2, 2 * PI, 2)
-#    pygame.draw.polygon(pantalla, negro, [[100, 100], [0, 200], [200, 200]], 5)
-#    
-#    #Texto
-#    fuente = pygame.font.Font(None, 25)
-#    texto = fuente.render("Mi texto", True,negro)
-#    pantalla.blit(texto, [250, 250])
