@@ -1,6 +1,8 @@
+
 import pygame
 import cv2
 import random
+#from pygame.locals import *
 
 #Clasificador de rostros en vista fontal
 face_classifier=cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
@@ -10,6 +12,7 @@ pygame.init()
 
 
 # Definicion de colores 
+#        R  G  B
 negro = (0, 0 ,0)
 blanco = (255, 255, 255)
 verde = (0, 255, 0)
@@ -25,7 +28,7 @@ dir = 'c'
 # Establecemos las dimensiones de la pantalla [largo,altura]
 dimensiones = [400,400]
 
-hecho = False 
+hecho = True
 # Se usa para establecer cuan rápido se actualiza la pantalla
 reloj = pygame.time.Clock()
 #Posicion inicial obstaculos
@@ -40,6 +43,7 @@ pos_cambio = 0
 pos_cambioy = 0
 velocidad = 2
 angle = 0
+rot = 0
 #Tolerancia para el centro
 tol = 0.25 
 #Contabilizador de puntaje
@@ -65,10 +69,10 @@ class carro(pygame.sprite.Sprite):
         # Posiciones iniciales de la esquina superior izquierda
         self.rect.topleft=(width,height)
         
-#    def rot_center(self, angle,x,y):
-#        self.image = pygame.transform.rotate(self.image, angle)
-#        self.rect = self.image.get_rect()
-#        self.rect.center=(x,y)
+    def rot_center(self, angle,x,y):
+        self.image = pygame.transform.rotate(self.image, angle)
+        self.rect = self.image.get_rect()
+        self.rect.center=(x,y)
  #-------- Clase para las monedas --------
 class coin(pygame.sprite.Sprite):
     def __init__(self,width,height,color):
@@ -99,6 +103,12 @@ for i in range(4):
 # --- Score ---
 fuente = pygame.font.Font(None, 25)
 texto = fuente.render("Score:", True,negro)
+
+# --- Bucle que espera que se presione una tecla para empezar el juego ---
+while hecho:    
+    for evento in pygame.event.get():
+        if evento.type == pygame.KEYDOWN: 
+            hecho = False
 
 # -------- Bucle principal del Programa -----------
 while not hecho:
@@ -135,10 +145,12 @@ while not hecho:
     if dir == 'l' and (x_coord>0):
         pos_cambio =- 3
         pos_cambioy = 0
+        rot = 1
 #        print('-')
     elif dir == 'r' and (x_coord<400-60):
         pos_cambio = 3
         pos_cambioy = 0
+        rot = 2
 #        print('+')
     elif dir == 'c':
 #        print('0')
@@ -147,20 +159,17 @@ while not hecho:
     elif dir == 'u' and (y_coord>0):
         pos_cambioy =- 3
         pos_cambio = 0
+        rot = 0
 #        print('++')
-    elif dir == 'd' and (y_coord<400-121):
+    elif dir == 'd' and (y_coord<400-60):
         pos_cambioy = 3
         pos_cambio = 0
+        rot = 3 
     else:
         pos_cambio = 0
         pos_cambioy = 0
 #        print('--')
 #    print(pos_cambio)
-# --- Limitar movimiento a la pantalla ---        
-#    if (x_coord<0) or(x_coord>400):
-#        pos_cambio=0
-#    if (y_coord<0) or(y_coord>400):
-#        pos_cambioy=0   
         
     x_coord = x_coord + pos_cambio
     y_coord = y_coord + pos_cambioy
@@ -178,7 +187,15 @@ while not hecho:
     pantalla.blit(obsta2.image,obsta2.rect)  
 #Carro
     car=carro(x_coord,y_coord,pygame.image.load("Carro.png"))
-#    car.rot_center(90,x_coord,y_coord)
+    #Con rot podemos rotar la imagen del carro dependiendo de la dirección de movimiento
+    if rot == 0:
+        car.rot_center(0,x_coord,y_coord)
+    elif rot == 1:
+        car.rot_center(90,x_coord,y_coord)
+    elif rot == 2:
+        car.rot_center(270,x_coord,y_coord)
+    elif rot == 3:
+        car.rot_center(180,x_coord,y_coord)
     pantalla.blit(car.image,car.rect)
    
     
