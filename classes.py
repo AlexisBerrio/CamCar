@@ -22,25 +22,25 @@ class Carro(pygame.sprite.Sprite):
             self.seed = randint(0, 3)
 
             if self.seed == 0:
-                self.vely = randint(2, 5)
+                self.vely = randint(3, 8)
                 self.angle = 0
                 self.dir = 'u'
                 self.posx = randint(45, 320)
                 self.posy = 320
             elif self.seed == 1:
-                self.velx = randint(2, 5)
+                self.velx = randint(3, 8)
                 self.angle = 270
                 self.dir = 'r'
                 self.posx = 45
                 self.posy = randint(45, 320)
             elif self.seed == 2:
-                self.vely = -randint(2, 5)
+                self.vely = -randint(3, 8)
                 self.angle = 180
                 self.dir = 'd'
                 self.posx = randint(45, 320)
                 self.posy = 45
             else:
-                self.velx = -randint(2, 5)
+                self.velx = -randint(3, 8)
                 self.angle = 90
                 self.dir = 'l'
                 self.posx = 320
@@ -68,19 +68,15 @@ class Carro(pygame.sprite.Sprite):
         self.rect.center = (x, y)
     
     def move_IA (self):
-        # self.rect = self.image.get_rect()
         self.posx = self.posx + self.velx
         self.posy = self.posy + self.vely
         #revisar colision con pantalla
-        if self.posx > 400 or self.posx < 0:
+        if self.posx > 380 or self.posx < 20:
             self.velx = - self.velx
-        if self.posy > 400 or self.posy < 0:
+        if self.posy > 374 or self.posy < 24:
             self.vely = - self.vely
         self.rect = self.image.get_rect()    
         self.rect.center = (self.posx, self.posy)   
-    # def draw(self, pantalla):
-    #     pygame.draw(pantalla, self.image,self.rect)
-
     
     def set_dir(self, dir):
         self.dir = dir

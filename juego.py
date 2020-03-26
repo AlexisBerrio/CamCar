@@ -52,6 +52,8 @@ o2 = 0
 #--- Crear ventana para el juego ---
 pantalla = pygame.display.set_mode(dimensiones) 
 pygame.display.set_caption("CAMCAR")
+background_image = pygame.image.load("Back.jpg")
+Inic = pygame.image.load("Inicio.png")
 # --- Ocultar el puntero --- 
 pygame.mouse.set_visible(0)
 #Mediante la clase Group se añaden a una lista todas las monedas generadas
@@ -67,8 +69,17 @@ car=Carro(x_coord,y_coord,pygame.image.load("Carro.png"),negro,'Player')
 
 # --- Score ---
 fuente = pygame.font.Font(None, 25)
-texto = fuente.render("Score:", True,negro)
+texto = fuente.render("Score:", True,blanco)
+# --- Game Over ---
+fuente2 = pygame.font.Font(None, 70)
+final = fuente2.render("Game Over", True,blanco)
+# --- Inicio ---
+fuente3 = pygame.font.Font(None, 40)
+inicio = fuente3.render("Pulse una tecla para iniciar", True,rojo)
 
+pantalla.blit(Inic, [0, 0])
+pantalla.blit(inicio, [10, 200])
+pygame.display.flip()
 # --- Bucle que espera que se presione una tecla para empezar el juego ---
 while hecho:
     for evento in pygame.event.get():
@@ -131,14 +142,14 @@ while not hecho:
         pos_cambioy = 0
 #        print('--')
 #    print(pos_cambio)
-
+    pantalla.blit(background_image, [0, 0])
     x_coord = x_coord + pos_cambio
     y_coord = y_coord + pos_cambioy
     rect_y += velocidad
 #   Limpiar pantalla
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
-    pantalla.fill(blanco)
+    # pantalla.fill(blanco)
     #Con rot podemos rotar la imagen del Carro dependiendo de la dirección de movimiento
     
      # ---- Generación de monedas en posiciones aleatorias ----   
@@ -157,7 +168,7 @@ while not hecho:
             lista_sprites.add(moneda)
             
             # Ahora para los obstaculos
-        if marcador == 0 or marcador == 5 or marcador == 10:
+        if marcador == 0 or marcador == 5 or marcador == 10or marcador == 10:
         #Obstaculo
             enemigo=Carro(rect_x,rect_y,pygame.image.load("Obstaculo1.png"),blanco,'IA')   
         # if marcador == 5:
@@ -186,14 +197,8 @@ while not hecho:
     for i in enemigos_lista:
 # pantalla.blit(i.image, i.rect)
         i.move_IA()
-         # i.draw(pantalla)
         pantalla.blit(i.image,i.rect)
-        # enemigos_lista.draw(pantalla)
-    # if o1 == 1:
-    #     pantalla.blit(obsta1.image, obsta1.rect)
-    # if o2 == 1:    
-    #     pantalla.blit(obsta2.image, obsta2.rect)
-        
+
     pantalla.blit(car.image,car.rect)
     
 # --- Se buscan colisiones del entre el Carro del jugadror y las monedas
@@ -209,22 +214,26 @@ while not hecho:
     enemigos_lista.draw(pantalla)
     
 # ---- Comprobar colisiones entre Carros ----
-    # if pygame.sprite.collide_rect(car, obsta1) or pygame.sprite.collide_rect(car, obsta2) :
-        # velocidad=0
+    for i in enemigos_lista:
+        if pygame.sprite.collide_rect(car, i) == True:
+            i.velx = 0
+            i.vely = 0
+            pantalla.blit(final, (90,190))
 #Score en pantalla 
     pantalla.blit(texto, [5, 5])
     font = pygame.font.Font(None, 25)
-    text = font.render(str(marcador), 1, negro)
+    text = font.render(str(marcador), 1, blanco)
     pantalla.blit(text, (70,5))      
     # --- Avanzamos y actualizamos la pantalla con lo que hemos dibujado.
     pygame.display.flip()
  
     # --- Limitamos a 60 fotogramas por segundo (frames per second)
     reloj.tick(30)
-     
+    
 # Cerramos la ventana y salimos.
 # Si te olvidas de esta última línea, el programa se 'colgará'
 # al salir si lo hemos estado ejecutando desde el IDLE.
+            
 cap.release()
 cv2.destroyAllWindows()
 pygame.quit()
