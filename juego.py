@@ -7,7 +7,7 @@ from classes import Carro,Coin
 
 #Clasificador de rostros en vista fontal
 face_classifier=cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
-cap = cv2.VideoCapture(-1)
+cap = cv2.VideoCapture(0)
 
 pygame.init()
 
@@ -20,7 +20,6 @@ verde = (0, 255, 0)
 rojo = (255, 0, 0)
 azul = (0, 0, 255)
 violeta = (98, 0, 255)
-negro = (0, 0 ,0)
 
 # ---- Declaración de variables ----
 # Variables de control para el movimiento
@@ -48,6 +47,9 @@ angle = 0
 tol = 0.22
 #Contabilizador de puntaje
 marcador = 0
+tope = 1
+o1 = 0
+o2 = 0
 #--- Crear ventana para el juego ---
 pantalla = pygame.display.set_mode(dimensiones) 
 pygame.display.set_caption("CAMCAR")
@@ -55,25 +57,14 @@ pygame.display.set_caption("CAMCAR")
 pygame.mouse.set_visible(0)
 #Mediante la clase Group se añaden a una lista todas las monedas generadas
 moneda_lista = pygame.sprite.Group()
+enemigos_lista = pygame.sprite.Group()
 #Se tiene tambien en cuenta el Carro del jugador
 lista_sprites = pygame.sprite.Group()
 
-#Obstaculo 1
-obsta1=Carro(rect_x,rect_y,pygame.image.load("Obstaculo1.png"),negro,'IA')
+
 #Obstaculo 2
-obsta2=Carro(rect_x+200,rect_y+6,pygame.image.load("Obstaculo2.png"),negro,'IA')
 #Carro
 car=Carro(x_coord,y_coord,pygame.image.load("Carro.png"),negro,'Player')
- # ---- Generación de monedas en posiciones aleatorias ----   
-for i in range(4):
-    # Esto representa una moneda
-    moneda = Coin(20, 20, negro)
-    # Establecemos una ubicación aleatoria para cada moneda
-    moneda.rect.x = random.randrange(400)
-    moneda.rect.y = random.randrange(400) 
-    # Añadimos cada moneda a la lista de objetos
-    moneda_lista.add(moneda)    
-    lista_sprites.add(moneda)
 
 # --- Score ---
 fuente = pygame.font.Font(None, 25)
@@ -111,18 +102,18 @@ while not hecho:
             dir = 'd'
 
     # Mostrar el resultado
-    #cv2.imshow('image', image)
+    cv2.imshow('image', image)
 # --- Bucle principal de eventos ---
     for evento in pygame.event.get():
         if evento.type == pygame.QUIT: 
             hecho = True  
 #        Al obtener la posición del rostro, se cambia la velocidad en X y Y
     if dir == 'l' and (x_coord>0):
-        pos_cambio =- 7
+        pos_cambio =- 4
         pos_cambioy = 0
 #        print('-')
     elif dir == 'r' and (x_coord<400-60):
-        pos_cambio = 7
+        pos_cambio = 4
         pos_cambioy = 0
 #        print('+')
     elif dir == 'c':
@@ -130,11 +121,11 @@ while not hecho:
         pos_cambio = 0
         pos_cambioy = 0
     elif dir == 'u' and (y_coord>0):
-        pos_cambioy =- 7
+        pos_cambioy =- 4
         pos_cambio = 0
 #        print('++')
     elif dir == 'd' and (y_coord<400-60):
-        pos_cambioy = 7
+        pos_cambioy = 4
         pos_cambio = 0
     else:
         pos_cambio = 0
@@ -150,8 +141,35 @@ while not hecho:
         break
     pantalla.fill(blanco)
     #Con rot podemos rotar la imagen del Carro dependiendo de la dirección de movimiento
+    
+     # ---- Generación de monedas en posiciones aleatorias ----   
+    if tope == 1:
+        tope = 0
+        moneda_lista.empty()
+        lista_sprites.empty()
+        for i in range(marcador + 5):
+            # Esto representa una moneda
+            moneda = Coin(20, 20)
+            # Establecemos una ubicación aleatoria para cada moneda
+            moneda.rect.x = random.randrange(30,400-30)
+            moneda.rect.y = random.randrange(50,400-30) 
+            # Añadimos cada moneda a la lista de objetos
+            moneda_lista.add(moneda)    
+            lista_sprites.add(moneda)
+            
+            # Ahora para los obstaculos
+        if marcador == 0 or marcador == 5 or marcador == 10:
+        #Obstaculo
+            enemigo=Carro(rect_x,rect_y,pygame.image.load("Obstaculo1.png"),blanco,'IA')   
+        # if marcador == 5:
+        #Obstaculo 1
+            # obsta2=Carro(rect_x+200,rect_y+6,pygame.image.load("Obstaculo2.png"),negro,'IA')
+            # o2 = 1
+        enemigos_lista.add(enemigo)
+        lista_sprites.add(enemigo)
+
     if pos_cambioy or pos_cambio != 0:
-        print('in')
+        # print('in')
         #rotamos a la posicion original antes de rotar de nuevo
         car.rot_center(-car.angle, x_coord, y_coord)
         if dir == 'u':
@@ -165,21 +183,35 @@ while not hecho:
         else:
             pass
     car.dir = dir
-    pantalla.blit(obsta1.image, obsta1.rect)
-    pantalla.blit(obsta2.image, obsta2.rect)
+    
+    for i in enemigos_lista:
+# pantalla.blit(i.image, i.rect)
+        i.move_IA()
+         # i.draw(pantalla)
+        pantalla.blit(i.image,i.rect)
+        # enemigos_lista.draw(pantalla)
+    # if o1 == 1:
+    #     pantalla.blit(obsta1.image, obsta1.rect)
+    # if o2 == 1:    
+    #     pantalla.blit(obsta2.image, obsta2.rect)
+        
     pantalla.blit(car.image,car.rect)
     
 # --- Se buscan colisiones del entre el Carro del jugadror y las monedas
     lista_impactos = pygame.sprite.spritecollide(car, moneda_lista, True) 
     for moneda in lista_impactos:
-        marcador += 1
+        marcador += 1   
+        if marcador % 5 == 0:
+            tope = 1
 #        print( marcador )
 # Dibujar monedas
     lista_sprites.draw(pantalla)
+    # Dibujar enemigos
+    enemigos_lista.draw(pantalla)
     
 # ---- Comprobar colisiones entre Carros ----
-    if pygame.sprite.collide_rect(car, obsta1) or pygame.sprite.collide_rect(car, obsta2) :
-        velocidad=0
+    # if pygame.sprite.collide_rect(car, obsta1) or pygame.sprite.collide_rect(car, obsta2) :
+        # velocidad=0
 #Score en pantalla 
     pantalla.blit(texto, [5, 5])
     font = pygame.font.Font(None, 25)
