@@ -5,7 +5,7 @@ import cv2
 
 
 face_classifier=cv2.CascadeClassifier('haarcascade_frontalface_default.xml')   
-cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture(-1)
 
 while(True):
     # Captura frame-by-frame
