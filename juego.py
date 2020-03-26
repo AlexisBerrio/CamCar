@@ -20,6 +20,7 @@ verde = (0, 255, 0)
 rojo = (255, 0, 0)
 azul = (0, 0, 255)
 violeta = (98, 0, 255)
+amarillo = (255, 255, 0)
 negro = (0, 0 ,0)
 
 # ---- Declaración de variables ----
@@ -30,6 +31,8 @@ dir = 'c'
 dimensiones = [400,400]
 
 hecho = True
+# flagScore se usa para detectar colision y agregar enemigos una sola vez
+flagScore = False
 # Se usa para establecer cuan rápido se actualiza la pantalla
 reloj = pygame.time.Clock()
 #Posicion inicial obstaculos
@@ -40,8 +43,6 @@ x_coord = 150
 y_coord = 290
 # Velocidad y direccion
 rect_cambio = 2
-pos_cambio = 0
-pos_cambioy = 0
 velocidad = 2
 angle = 0
 #Tolerancia para el centro
@@ -55,19 +56,18 @@ pygame.display.set_caption("CAMCAR")
 pygame.mouse.set_visible(0)
 #Mediante la clase Group se añaden a una lista todas las monedas generadas
 moneda_lista = pygame.sprite.Group()
+enemigos_lista = pygame.sprite.Group()
 #Se tiene tambien en cuenta el Carro del jugador
 lista_sprites = pygame.sprite.Group()
-
-#Obstaculo 1
-obsta1=Carro(rect_x,rect_y,pygame.image.load("Obstaculo1.png"),negro,'IA')
-#Obstaculo 2
-obsta2=Carro(rect_x+200,rect_y+6,pygame.image.load("Obstaculo2.png"),negro,'IA')
+#Enemigos
+enemigos = 0
 #Carro
 car=Carro(x_coord,y_coord,pygame.image.load("Carro.png"),negro,'Player')
+#Bandera para actualizar lista de enemigos
  # ---- Generación de monedas en posiciones aleatorias ----   
 for i in range(4):
     # Esto representa una moneda
-    moneda = Coin(20, 20, negro)
+    moneda = Coin(20, 20, amarillo)
     # Establecemos una ubicación aleatoria para cada moneda
     moneda.rect.x = random.randrange(400)
     moneda.rect.y = random.randrange(400) 
@@ -87,6 +87,31 @@ while hecho:
 
 # -------- Bucle principal del Programa -----------
 while not hecho:
+    # --- Comprobar el marcador y decidir la aparicion de los enemigos
+    if flagScore:
+        if marcador > 5:
+            enemigos = 1
+        elif marcador > 10:
+            enemigos = 2
+        elif marcador > 20:
+            enemigos = 1
+        elif marcador > 30:
+            enemigos = 2
+        elif marcador > 40:
+            enemigos = 1
+        elif marcador > 50:
+            enemigos = 1
+        elif marcador > 60:
+            enemigos = 1
+        else:
+            enemigos = 0
+        for i in range(enemigos):
+            # Esto representa una moneda
+            enemigo = Carro(rect_x, rect_y, pygame.image.load("Obstaculo1.png"), blanco, 'IA')
+            # Añadimos cada moneda a la lista de objetos
+            enemigos_lista.add(enemigo)
+            lista_sprites.add(enemigo)
+        flagScore = False
     # Captura frame-by-frame
     ret, image = cap.read()
     # Reflejar la imagen con respecto al eje y
@@ -109,7 +134,6 @@ while not hecho:
             dir = 'u'
         elif y + h/2 > image.shape[0]/2 and (x + w / 2 > image.shape[1] / 2 - image.shape[1] / 2 * tol) and (x + w / 2 < image.shape[1] / 2 + image.shape[1] / 2 * tol):
             dir = 'd'
-
     # Mostrar el resultado
     #cv2.imshow('image', image)
 # --- Bucle principal de eventos ---
@@ -118,68 +142,73 @@ while not hecho:
             hecho = True  
 #        Al obtener la posición del rostro, se cambia la velocidad en X y Y
     if dir == 'l' and (x_coord>0):
-        pos_cambio =- 7
-        pos_cambioy = 0
+        car.velx =- 5
+        car.vely = 0
 #        print('-')
-    elif dir == 'r' and (x_coord<400-60):
-        pos_cambio = 7
-        pos_cambioy = 0
+    elif dir == 'r' and (x_coord<400):
+        car.velx = 5
+        car.vely = 0
 #        print('+')
     elif dir == 'c':
 #        print('0')
-        pos_cambio = 0
-        pos_cambioy = 0
+        car.velx = 0
+        car.vely = 0
     elif dir == 'u' and (y_coord>0):
-        pos_cambioy =- 7
-        pos_cambio = 0
+        car.vely =- 5
+        car.velx = 0
 #        print('++')
-    elif dir == 'd' and (y_coord<400-60):
-        pos_cambioy = 7
-        pos_cambio = 0
+    elif dir == 'd' and (y_coord<400):
+        car.vely = 5
+        car.velx = 0
     else:
-        pos_cambio = 0
-        pos_cambioy = 0
-#        print('--')
-#    print(pos_cambio)
+        car.velx = 0
+        car.vely = 0
 
-    x_coord = x_coord + pos_cambio
-    y_coord = y_coord + pos_cambioy
-    rect_y += velocidad
 #   Limpiar pantalla
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
     pantalla.fill(blanco)
     #Con rot podemos rotar la imagen del Carro dependiendo de la dirección de movimiento
-    if pos_cambioy or pos_cambio != 0:
+    if car.vely or car.velx != 0:
         print('in')
         #rotamos a la posicion original antes de rotar de nuevo
-        car.rot_center(-car.angle, x_coord, y_coord)
+        car.rot_center(-car.angle, car.velx, car.vely)
         if dir == 'u':
-            car.rot_center(0, x_coord, y_coord)
+            car.rot_center(0, car.velx, car.vely)
         elif dir == 'l':
-            car.rot_center(90, x_coord, y_coord)
+            car.rot_center(90, car.velx, car.vely)
         elif dir == 'r':
-            car.rot_center(270, x_coord, y_coord)
+            car.rot_center(270, car.velx, car.vely)
         elif dir == 'd':
-            car.rot_center(180, x_coord, y_coord)
+            car.rot_center(180, car.velx, car.vely)
         else:
             pass
     car.dir = dir
-    pantalla.blit(obsta1.image, obsta1.rect)
-    pantalla.blit(obsta2.image, obsta2.rect)
+
+    for i in enemigos_lista:
+        pantalla.blit(i.image, i.rect)
+
     pantalla.blit(car.image,car.rect)
     
 # --- Se buscan colisiones del entre el Carro del jugadror y las monedas
-    lista_impactos = pygame.sprite.spritecollide(car, moneda_lista, True) 
+    lista_impactos = pygame.sprite.spritecollide(car, moneda_lista, True)
+
     for moneda in lista_impactos:
         marcador += 1
-#        print( marcador )
+        flagScore = True
+
+
 # Dibujar monedas
     lista_sprites.draw(pantalla)
     
 # ---- Comprobar colisiones entre Carros ----
-    if pygame.sprite.collide_rect(car, obsta1) or pygame.sprite.collide_rect(car, obsta2) :
-        velocidad=0
+    for i in enemigos_lista:
+        if pygame.sprite.collide_rect(car, i):
+            car.velx = 0
+            car.vely = 0
+            car.posx = 150
+            car.posy = 290
+
 #Score en pantalla 
     pantalla.blit(texto, [5, 5])
     font = pygame.font.Font(None, 25)
@@ -188,7 +217,7 @@ while not hecho:
     # --- Avanzamos y actualizamos la pantalla con lo que hemos dibujado.
     pygame.display.flip()
  
-    # --- Limitamos a 60 fotogramas por segundo (frames per second)
+    # --- Limitamos a 30 fotogramas por segundo (frames per second)
     reloj.tick(30)
      
 # Cerramos la ventana y salimos.

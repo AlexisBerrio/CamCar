@@ -12,14 +12,14 @@ class Carro(pygame.sprite.Sprite):
         self.image.set_colorkey(color)
         # Obtener el rectangulo de la imagen
         self.rect = self.image.get_rect()
-
+        self.velx = 0
+        self.vely = 0
+        self.posx = 0
+        self.posy = 0
         # Hacer aparecer el carro en el centro si es jugador, o en posicion aleatoria si es IA
         if type == 'IA':
 
             self.seed = randint(0, 3)
-
-            self.velx = 0
-            self.vely = 0
 
             if self.seed == 0:
                 self.vely = randint(10, 45)
@@ -35,7 +35,7 @@ class Carro(pygame.sprite.Sprite):
                 self.height = randint(45, 320)
             elif self.seed == 2:
                 self.vely = -randint(3, 45)
-                self.angle = 145
+                self.angle = 180
                 self.dir = 'd'
                 self.width = randint(45, 320)
                 self.height = 45
@@ -64,7 +64,19 @@ class Carro(pygame.sprite.Sprite):
         self.image = pygame.transform.rotate(self.image, angle)
         self.angle = angle
         self.rect = self.image.get_rect()
-        self.rect.center = (x, y)
+        self.posx = self.posx + x
+        self.posy = self.posy + y
+
+    def move_IA (self):
+        self.rect = self.image.get_rect()
+        self.posx = self.posx + self.velx
+        self.posy = self.posy + self.vely
+        #revisar colision con pantalla
+        if self.posx > 400 or self.posx < 0:
+            self.velx = - self.velx
+        if self.posy > 400 or self.posy < 0:
+            self.vely = - self.vely
+
 
     def set_dir(self, dir):
         self.dir = dir
