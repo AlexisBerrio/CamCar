@@ -1,16 +1,12 @@
 
-import numpy as np
+#import numpy as np
 import cv2
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 
 
 face_classifier=cv2.CascadeClassifier('haarcascade_frontalface_default.xml')   
-cap = cv2.VideoCapture(0)
-time_counter = 0
-AVG_TICKS = 18
+cap = cv2.VideoCapture(-1)
 
-avg_x = []
-avg_y = []
 while(True):
     # Captura frame-by-frame
     ret, image = cap.read()
@@ -20,8 +16,7 @@ while(True):
     face= face_classifier.detectMultiScale(gris,1.3,5)
     #Seguimiento del rostro mediante un rectangulo
     for(x,y,w,h) in face:
-        time_counter += 1
-        cv2.rectangle(image,(x,y),(x+w,y+h),(255,0,0),3)
+        cv2.rectangle(image,(x,y),(x+w,y+h),(255,0,0),3)  
     # Mostrar el resultado
     cv2.imshow('image',image)
     if cv2.waitKey(1) & 0xFF == ord('q'):
