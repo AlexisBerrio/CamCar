@@ -72,13 +72,9 @@ hecho = True # Variable para habilitar el loop principal
 # --------------------------------------------------------------------------
 
 # -- Evento principal en la ventana  ---------------------------------------
-
+# Iniciar musica de fondo
+pygame.mixer.music.play(-1)
 while hecho1: # mientras la bandera de ejecucion sea True, el juego corre
-
-    
-    # Iniciar musica de fondo
-    pygame.mixer.music.play(-1)
-    
 
 
 
@@ -110,10 +106,6 @@ while hecho1: # mientras la bandera de ejecucion sea True, el juego corre
     tol = 0.22 # Tolerancia en el centro para cuando cambia a la posición del rostro
     marcador = 0 # Contabilizador de puntaje
     tope = 1 # Tope se activa cuando se llega a ciertos puntajes, sube de nivel
-
-    
-    
-        # --- Instanciar ventana para el juego ---
 
 
     # --- Instanciar ventana para el juego ---
@@ -164,7 +156,12 @@ while hecho1: # mientras la bandera de ejecucion sea True, el juego corre
     pantalla.blit(inicio, [10, 200])
     # flip se encarga de actualizar la pantalla con lo anterior
     pygame.display.flip()
-
+    
+    # --- Bucle que espera que se presione una tecla para empezar el juego ---
+    while hecho:
+        for evento in pygame.event.get():
+            if evento.type == pygame.KEYDOWN:
+                hecho = False
     # --------------------------------------------------------------------------
     # --7. Ciclo principal del juego -------------------------------------------
     # --------------------------------------------------------------------------
