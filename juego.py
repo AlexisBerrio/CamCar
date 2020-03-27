@@ -1,4 +1,7 @@
+<<<<<<< HEAD
   
+=======
+>>>>>>> 7c7495a862eab90d8332e4b15318095d3041739c
 # --------------------------------------------------------------------------
 # ------- CARCAM Juego - Primera entrega  ----------------------------------
 # ------- Procesamiento digital de imagenes --------------------------------
@@ -7,6 +10,7 @@
 # -------      Estudiantes  ------------------------------------------------
 # ------- Marzo de 2020  ---------------------------------------------------
 # --------------------------------------------------------------------------
+<<<<<<< HEAD
 
 # --------------------------------------------------------------------------
 # --1. Inicializar el sistema, importar dependencias y clases  -------------
@@ -33,20 +37,52 @@ cap = cv2.VideoCapture(0)
 # --4. Inicializar la API PyGame  ------------------------------------------
 # --------------------------------------------------------------------------
 
+=======
+
+# --------------------------------------------------------------------------
+# --1. Inicializar el sistema, importar dependencias y clases  -------------
+# --------------------------------------------------------------------------
+import pygame  # librería que contiene la API para el juego
+import cv2  # librería OpenCV
+import random  # librería para producir numeros aleatorios
+from classes import Carro, Coin  # clases para las entidades del juego
+
+# --------------------------------------------------------------------------
+# --2. Cargar el modelo pre-entrenado para deteccion de rostros  -----------
+# --------------------------------------------------------------------------
+
+face_classifier = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
+
+# --------------------------------------------------------------------------
+# --3. Inicializar camara web  ---------------------------------------------
+# --------------------------------------------------------------------------
+
+cap = cv2.VideoCapture(-1)
+
+# --------------------------------------------------------------------------
+# --4. Inicializar la API PyGame  ------------------------------------------
+# --------------------------------------------------------------------------
+
+>>>>>>> 7c7495a862eab90d8332e4b15318095d3041739c
 pygame.init()
 
 # --------------------------------------------------------------------------
 # --5. Declaracion de variables iniciales y recursos  ----------------------
 # --------------------------------------------------------------------------
 # -- Definicion de colores para filtrar fondos de imágenes usadas para los elementos del juego --
+<<<<<<< HEAD
+=======
+
+>>>>>>> 7c7495a862eab90d8332e4b15318095d3041739c
 #        R  G  B
-negro = (0, 0 ,0)
+negro = (0, 0, 0)
 blanco = (255, 255, 255)
 verde = (0, 255, 0)
 rojo = (255, 0, 0)
 azul = (0, 0, 255)
 violeta = (98, 0, 255)
 
+<<<<<<< HEAD
 # -- Declaración de variables referentes al sonido del juego --
 Coin_sound = pygame.mixer.Sound("CoinGet.ogg")
 GameOver = pygame.mixer.Sound("final.wav")
@@ -57,6 +93,14 @@ dir = 'c' # Direccion inicial del carro
 dimensiones = [400, 400] # Establecemos las dimensiones de la pantalla [largo,altura]
 hecho1 = True # Variable para habilitar el loop de reinicio del juego
 hecho = True # Variable para habilitar el loop principal   
+=======
+# -- Declaración de variables de control para el movimiento en el juego --
+
+dir = 'c' # Direccion inicial del carro
+dimensiones = [400, 400] # Establecemos las dimensiones de la pantalla [largo,altura]
+hecho1 = True # Variable para habilitar el loop de reinicio del juego
+hecho = True # Variable para habilitar el loop principal
+>>>>>>> 7c7495a862eab90d8332e4b15318095d3041739c
 
 # --------------------------------------------------------------------------
 # --6. Inialiacion del programa  -------------------------------------------
@@ -65,16 +109,24 @@ hecho = True # Variable para habilitar el loop principal
 # -- Evento principal en la ventana  ---------------------------------------
 
 while hecho1: # mientras la bandera de ejecucion sea True, el juego corre
+<<<<<<< HEAD
     
     # Iniciar musica de fondo
     pygame.mixer.music.play(-1)
     
+=======
+
+>>>>>>> 7c7495a862eab90d8332e4b15318095d3041739c
     # -- Evento de pulsacion para salir del juego --
 
     for evento in pygame.event.get(): # se revisa cada evento que ocurre en el juego
         if evento.type == pygame.QUIT: # se revisa si el evento es de salir
             hecho1 = False # se termina el juego poniendo esta bander en falso
+<<<<<<< HEAD
             
+=======
+
+>>>>>>> 7c7495a862eab90d8332e4b15318095d3041739c
     # -- Se establece el tiempo de refresco de los eventos en el juego --
 
     reloj = pygame.time.Clock() # Inicializar tiempo
@@ -97,9 +149,14 @@ while hecho1: # mientras la bandera de ejecucion sea True, el juego corre
     tol = 0.22 # Tolerancia en el centro para cuando cambia a la posición del rostro
     marcador = 0 # Contabilizador de puntaje
     tope = 1 # Tope se activa cuando se llega a ciertos puntajes, sube de nivel
+<<<<<<< HEAD
     
     
         # --- Instanciar ventana para el juego ---
+=======
+
+    # --- Instanciar ventana para el juego ---
+>>>>>>> 7c7495a862eab90d8332e4b15318095d3041739c
     # La instancia de display permite crear la ventana
     pantalla = pygame.display.set_mode(dimensiones)
     # Nombre de la ventana
@@ -109,8 +166,12 @@ while hecho1: # mientras la bandera de ejecucion sea True, el juego corre
     # Carga en una variable la imagen de fondo del menú de inicio
     Inic = pygame.image.load("Inicio.png")
     pygame.mouse.set_visible(0) # Ocultar el puntero
+<<<<<<< HEAD
     
     
+=======
+
+>>>>>>> 7c7495a862eab90d8332e4b15318095d3041739c
     # --- Contenedores para entidades: monedas y enemigos ---
 
     # Mediante la clase Group se puede agregar objetos para deteccion de colision y para la mecanica del juego
@@ -120,6 +181,7 @@ while hecho1: # mientras la bandera de ejecucion sea True, el juego corre
     enemigos_lista = pygame.sprite.Group()
     # Instancia para almacenar las imagenes que corresponden a las entidades
     lista_sprites = pygame.sprite.Group()
+<<<<<<< HEAD
     
     # Carro, recibe coordenadas en X y Y, su imagen, su color de fondo
     # y una etiqueda para diferenciarlo de la IA
@@ -130,6 +192,18 @@ while hecho1: # mientras la bandera de ejecucion sea True, el juego corre
     
     
         # Puntaje
+=======
+
+    # --- Instanciar jugador ---
+
+    # Carro, recibe coordenadas en X y Y, su imagen, su color de fondo
+    # y una etiqueda para diferenciarlo de la IA
+    car = Carro(x_coord, y_coord, pygame.image.load("Carro.png"), negro, 'Player')
+
+    # --- Variables para texto en pantalla. ---
+
+    # Puntaje
+>>>>>>> 7c7495a862eab90d8332e4b15318095d3041739c
     # Función que recibe el tipo de letra y el tamano, None por defecto
     fuente = pygame.font.Font(None, 25)
     # Crea una superficie para poner el texto 
@@ -146,12 +220,17 @@ while hecho1: # mientras la bandera de ejecucion sea True, el juego corre
     pantalla.blit(inicio, [10, 200])
     # flip se encarga de actualizar la pantalla con lo anterior
     pygame.display.flip()
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> 7c7495a862eab90d8332e4b15318095d3041739c
     # --------------------------------------------------------------------------
     # --7. Ciclo principal del juego -------------------------------------------
     # --------------------------------------------------------------------------
 
     # -------- Bucle de espera del Programa -----------
+<<<<<<< HEAD
     
     
     # --- Bucle que espera que se presione una tecla para empezar el juego ---
@@ -161,6 +240,16 @@ while hecho1: # mientras la bandera de ejecucion sea True, el juego corre
                 hecho = False
     
     # -------- Bucle principal del Programa -----------
+=======
+
+    while hecho: # bandera para mantener en espera hasta presionar tecla abajo
+        for evento in pygame.event.get(): # escuchador de eventos
+            if evento.type == pygame.KEYDOWN: # revisar si fue una tecla abajo
+                hecho = False # cambiar bandera para iniciar juego
+
+    # -------- Bucle de ejecucion del Programa -----------
+
+>>>>>>> 7c7495a862eab90d8332e4b15318095d3041739c
     while not hecho: # bandera para mantener el juego hasta que se cierre
         # Captura frame-by-frame
         ret, image = cap.read()
@@ -202,12 +291,20 @@ while hecho1: # mientras la bandera de ejecucion sea True, el juego corre
                     x + w / 2 > image.shape[1] / 2 - image.shape[1] / 2 * tol) and (
                     x + w / 2 < image.shape[1] / 2 + image.shape[1] / 2 * tol):
                 dir = 'd' # direccion a abajo
+<<<<<<< HEAD
     
         # Mostrar el resultado de la captura de vídeo
         cv2.imshow('image', image)
         
         
         
+=======
+
+        # Mostrar el resultado de la captura de vídeo
+        cv2.imshow('image', image)
+
+
+>>>>>>> 7c7495a862eab90d8332e4b15318095d3041739c
         # --- Bucle principal de eventos de Pygame ---
 
         # Se sale del juego al presionar "salir"
@@ -215,15 +312,23 @@ while hecho1: # mientras la bandera de ejecucion sea True, el juego corre
             if evento.type == pygame.QUIT:
                 hecho1 = False
                 hecho = True
+<<<<<<< HEAD
                 
                 
+=======
+
+>>>>>>> 7c7495a862eab90d8332e4b15318095d3041739c
         #  Al presionar 'q'en la ventana de opencv, termina el ciclo actual
         #  cambiando la banera hecho1 a Falso y rompiendo el ciclo principal
         if cv2.waitKey(1) & 0xFF == ord('q'):
             hecho1 = False
             break
+<<<<<<< HEAD
         
         
+=======
+
+>>>>>>> 7c7495a862eab90d8332e4b15318095d3041739c
         # Al obtener la posición del rostro, se cambia la velocidad en X y Y
         # Se limitan los movimientos al tamaño de la pantalla y se asigna
         # velocidad en una direccion dada por el rastreo de rostro
@@ -253,7 +358,11 @@ while hecho1: # mientras la bandera de ejecucion sea True, el juego corre
         # Actualiza las coordenadas del carro para hacer que se mueva 
         x_coord = x_coord + pos_cambio # actualizar coordenada x
         y_coord = y_coord + pos_cambioy # actualizar coordenada y
+<<<<<<< HEAD
             
+=======
+
+>>>>>>> 7c7495a862eab90d8332e4b15318095d3041739c
         # ---- Generación de monedas en posiciones aleatorias ----
 
         # Cuando se "suba de nivel, genera mas monedas" y se añade un enemigo
@@ -270,7 +379,11 @@ while hecho1: # mientras la bandera de ejecucion sea True, el juego corre
                 # Añadimos cada moneda a la lista de objetos
                 moneda_lista.add(moneda)
                 lista_sprites.add(moneda)
+<<<<<<< HEAD
                 
+=======
+
+>>>>>>> 7c7495a862eab90d8332e4b15318095d3041739c
             # ---- Generación de enemigos en posiciones aleatorias ----
 
             # Ahora para los obstaculos, enemigo cada 5 monedas
@@ -281,8 +394,12 @@ while hecho1: # mientras la bandera de ejecucion sea True, el juego corre
             # Se añade el nuevo objeto a la lista de sprites y a la lista de enemigos
             enemigos_lista.add(enemigo)
             lista_sprites.add(enemigo)
+<<<<<<< HEAD
             
             
+=======
+
+>>>>>>> 7c7495a862eab90d8332e4b15318095d3041739c
         # ---- Rotación y movimiento del jugador ----
         if pos_cambioy or pos_cambio != 0:
             # Con rot podemos rotar la imagen del Carro dependiendo de la dirección de movimiento
@@ -298,6 +415,7 @@ while hecho1: # mientras la bandera de ejecucion sea True, el juego corre
                 car.rot_center(180, x_coord, y_coord)
             else:
                 pass
+<<<<<<< HEAD
             
             
         # -- Se le asigna la direccion del rostro al carro del jugador
@@ -305,6 +423,13 @@ while hecho1: # mientras la bandera de ejecucion sea True, el juego corre
         
         
         # -- Genera el movimiento de los carros de la IA  y los muestra en pantalla
+=======
+
+        # -- Se le asigna la direccion del rostro al carro del jugador
+        car.dir = dir
+
+        # -- Genera el moviiento de los carros de la IA  y los muestra en pantalla
+>>>>>>> 7c7495a862eab90d8332e4b15318095d3041739c
         for i in enemigos_lista:
             # Realiza la interacción por cada carro de la IA en pantalla
             # cada enemigo se mueve de forma aleatoria mediante el metodo move_IA (clases)
@@ -313,8 +438,12 @@ while hecho1: # mientras la bandera de ejecucion sea True, el juego corre
 
         # -- Muestra y actualiza el carro del jugador, recibe la imagen y su rectángulo
         pantalla.blit(car.image, car.rect)
+<<<<<<< HEAD
         
         
+=======
+
+>>>>>>> 7c7495a862eab90d8332e4b15318095d3041739c
         # --- Se buscan colisiones del entre el Carro del jugadror y las monedas
         """La función revisa si los rectángulos de los objetos se superponen, de
         ser así, aumenta en 1 su contador por cada colisión,recibe el carro del jugador,
@@ -322,17 +451,28 @@ while hecho1: # mientras la bandera de ejecucion sea True, el juego corre
         """
         lista_impactos = pygame.sprite.spritecollide(car, moneda_lista, True)
         for moneda in lista_impactos:
+<<<<<<< HEAD
             Coin_sound.play() #Se emite un sonido al detectar una colisión con monedas
             marcador += 1   
             # Cada 5 monedas obtenidas, se sube de nivel 
             if marcador % 5 == 0:
                 tope = 1
                 
+=======
+            marcador += 1
+            # Cada 5 monedas obtenidas, se sube de nivel 
+            if marcador % 5 == 0:
+                tope = 1
+>>>>>>> 7c7495a862eab90d8332e4b15318095d3041739c
         # Dibujar monedas
         lista_sprites.draw(pantalla)
         # Dibujar enemigos
         enemigos_lista.draw(pantalla)
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> 7c7495a862eab90d8332e4b15318095d3041739c
         # ---- Comprobar colisiones entre Carros ----
         for i in enemigos_lista:
             # Detecta la colisión entre los rectángulos de los enemigos y jugador
@@ -347,7 +487,11 @@ while hecho1: # mientras la bandera de ejecucion sea True, el juego corre
                 # Se esperan 2000 ms antes de reiniciar
                 pygame.time.wait(2000)
                 hecho = True
+<<<<<<< HEAD
 # Score en pantalla
+=======
+        # Score en pantalla
+>>>>>>> 7c7495a862eab90d8332e4b15318095d3041739c
         pantalla.blit(texto, [5, 5])
         font = pygame.font.Font(None, 25)
         text = font.render(str(marcador), 1, blanco)
